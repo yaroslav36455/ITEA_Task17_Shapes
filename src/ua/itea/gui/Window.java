@@ -35,8 +35,10 @@ public class Window extends JFrame {
 	private JPanel circleSetterPanel;
 	private JPanel rectangleSetterPanel;
 	private JPanel triangleComputationMethodPanel;
-	private JPanel firstMethodComputationPanel;
-	private JPanel secondMethodComputationPanel;
+	private JPanel firstTriangleSetterPanel;
+	private JPanel secondTriangleSetterPanel;
+	
+	private JPanel successMessagePanel;
 	
 	
 	public Window(ShapeFactory shapeFactory, 
@@ -45,8 +47,7 @@ public class Window extends JFrame {
 		this.shapeFactory = shapeFactory;
 		this.shapeStorageService = shapeStorageService;
 		
-		actionSelectorPanel = new ActionSelectorPanel();
-		setPanel(actionSelectorPanel);
+		setPanel(getActionSelectorPanel());
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
@@ -73,6 +74,79 @@ public class Window extends JFrame {
 		setVisible(true);
 	}
 	
+	private JPanel getActionSelectorPanel() {
+		if (actionSelectorPanel == null) {
+			actionSelectorPanel = new ActionSelectorPanel();
+		}
+		
+		return actionSelectorPanel;
+	}
+	
+	private JPanel getShapeSelectorPanel() {
+		if (shapeSelectorPanel == null) {
+			shapeSelectorPanel = new ShapeSelectorPanel(getActionSelectorPanel());
+		}
+		
+		return shapeSelectorPanel;
+	}
+	
+	private JPanel getCircleSetterPanel() {
+		if (circleSetterPanel == null) {
+			circleSetterPanel = new CircleSetterPanel(getShapeSelectorPanel());
+		}
+		
+		return circleSetterPanel;
+	}
+	
+	private JPanel getRectangleSetterPanel() {
+		if (rectangleSetterPanel == null) {
+			rectangleSetterPanel = new RectangleSetterPanel(getShapeSelectorPanel());
+		}
+		
+		return rectangleSetterPanel;
+	}
+	
+	private JPanel getTriangleComputationMethodPanel() {
+		if (triangleComputationMethodPanel == null) {
+			triangleComputationMethodPanel
+				= new TriangleComputationMethodSelectorPanel(getShapeSelectorPanel());
+		}
+		
+		return triangleComputationMethodPanel;
+	}
+	
+	private JPanel getFirstTriangleSetterPanel() {
+		if (firstTriangleSetterPanel == null) {
+			firstTriangleSetterPanel
+				= new FirstTriangleSetterPanel(getTriangleComputationMethodPanel());
+		}
+		
+		return firstTriangleSetterPanel;
+	}
+	
+	private JPanel getSecondTriangleSetterPanel() {
+		if (secondTriangleSetterPanel == null) {
+			secondTriangleSetterPanel
+				= new SecondTriangleSetterPanel(getTriangleComputationMethodPanel());
+		}
+		
+		return secondTriangleSetterPanel;
+	}
+	
+	private JPanel getContentPanel() throws SQLException,
+											EmptyTableException {
+		return new ContentPanel(getActionSelectorPanel());
+	}
+	
+	private JPanel getSuccessMessagePanel() {
+		if (successMessagePanel == null) {
+			successMessagePanel
+				= new SuccessMessagePanel("Success", getShapeSelectorPanel());
+		}
+		
+		return successMessagePanel;
+	}
+	
 	
 	private class ActionSelectorPanel extends JPanel {
 		private Dimension preferredSize;
@@ -88,18 +162,13 @@ public class Window extends JFrame {
 		}
 		
 		private JButton createAddShapeButton() {
-			JPanel currentPanel = this;
 			JButton addShapesButton = new JButton("Add shape to storage");
 			
 			addShapesButton.addActionListener(new ActionListener() {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (shapeSelectorPanel == null) {
-						shapeSelectorPanel = new ShapeSelectorPanel(currentPanel);
-					}
-					
-					setPanel(shapeSelectorPanel);
+					setPanel(getShapeSelectorPanel());
 				}
 			});
 			
@@ -117,12 +186,12 @@ public class Window extends JFrame {
 					JPanel nextPanel = null;
 					
 					try {
-						nextPanel = new ContentPanel(currentPanel);
+						nextPanel = getContentPanel();
 					} catch (EmptyTableException ex) {
 						nextPanel = new ErrorMessagePanel(ex.getMessage(), currentPanel);
 					} catch (SQLException ex) {
 						ex.printStackTrace();
-						nextPanel = actionSelectorPanel;
+						nextPanel = getActionSelectorPanel();
 					}
 					
 					setPanel(nextPanel);
@@ -195,7 +264,6 @@ public class Window extends JFrame {
 		}
 		
 		private void setAddCircleButton() {
-			JPanel currentPanel = this;
 			GridBagConstraints gbc = new GridBagConstraints();
 			JButton jButton = new JButton(new ImageIcon("img/circle_0_50x50.png"));
 			
@@ -203,11 +271,7 @@ public class Window extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (circleSetterPanel == null) {
-						circleSetterPanel = new CircleSetterPanel(currentPanel);
-					}
-					
-					setPanel(circleSetterPanel);
+					setPanel(getCircleSetterPanel());
 				}
 			});
 			
@@ -220,7 +284,6 @@ public class Window extends JFrame {
 		}
 		
 		private void setAddRectangleButton() {
-			JPanel currentPanel = this;
 			GridBagConstraints gbc = new GridBagConstraints();
 			JButton jButton = new JButton(new ImageIcon("img/rectangle_0_68x50.png"));
 			
@@ -228,11 +291,7 @@ public class Window extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (rectangleSetterPanel == null) {
-						rectangleSetterPanel = new RectangleSetterPanel(currentPanel);
-					}
-					
-					setPanel(rectangleSetterPanel);
+					setPanel(getRectangleSetterPanel());
 				}
 			});
 			
@@ -245,7 +304,6 @@ public class Window extends JFrame {
 		}
 		
 		private void setAddTriangleButton() {
-			JPanel currentPanel = this;
 			GridBagConstraints gbc = new GridBagConstraints();
 			JButton jButton = new JButton(new ImageIcon("img/triangle_0_99x50.png"));
 			
@@ -253,11 +311,7 @@ public class Window extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (triangleComputationMethodPanel == null) {
-						triangleComputationMethodPanel = new TriangleComputationMethodSelectorPanel(currentPanel);
-					}
-					
-					setPanel(triangleComputationMethodPanel);
+					setPanel(getTriangleComputationMethodPanel());
 				}
 			});
 			
@@ -372,7 +426,7 @@ public class Window extends JFrame {
 			
 			try {
 				saveAction();
-				nextPanel = new SuccessMessagePanel("Success", shapeSelectorPanel);
+				nextPanel = getSuccessMessagePanel();
 				refresh();
 				
 			}  catch (NumberFormatException ex) {
@@ -381,7 +435,7 @@ public class Window extends JFrame {
 				nextPanel = new ErrorMessagePanel(ex.getMessage(), this);
 			} catch (SQLException ex) {
 				ex.printStackTrace();
-				nextPanel = actionSelectorPanel;
+				nextPanel = getActionSelectorPanel();
 			}
 			
 			setPanel(nextPanel);
@@ -519,18 +573,13 @@ public class Window extends JFrame {
 		}
 		
 		private JButton getFirstComputationMethodButton() {
-			JPanel currentPanel = this;
 			JButton jButton = new JButton("Two sides and angle");
 			
 			jButton.addActionListener(new ActionListener() {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (firstMethodComputationPanel == null) {
-						firstMethodComputationPanel = new FirstTriangleSetterPanel(currentPanel);
-					}
-					
-					setPanel(firstMethodComputationPanel);
+					setPanel(getFirstTriangleSetterPanel());
 				}
 			});
 			
@@ -538,18 +587,13 @@ public class Window extends JFrame {
 		}
 		
 		private JButton getSecondComputationMethodButton() {
-			JPanel currentPanel = this;
 			JButton jButton = new JButton("One side and two angles");
 			
 			jButton.addActionListener(new ActionListener() {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (secondMethodComputationPanel == null) {
-						secondMethodComputationPanel = new SecondTriangleSetterPanel(currentPanel);
-					}
-					
-					setPanel(secondMethodComputationPanel);
+					setPanel(getSecondTriangleSetterPanel());
 				}
 			});
 			
