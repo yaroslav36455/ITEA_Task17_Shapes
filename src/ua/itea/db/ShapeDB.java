@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import ua.itea.model.Shape;
 
@@ -54,40 +55,34 @@ public class ShapeDB {
 	}
 	
 	public String[][] getShapes(Connection conn) throws SQLException, EmptyTableException {
-		String[][] result = null;
+		ArrayList<String[]> table = new ArrayList<String[]>();
 		Statement statement = null;
 		ResultSet resultSet = null;
 		
 		try {
-			int numberOfShapes = 0;
-			
 			statement = conn.createStatement();
 			statement.execute(CREATE_TABLE);
 			
-			resultSet = statement.executeQuery(COUNT);
-			if (resultSet.next()) {
-				numberOfShapes = resultSet.getInt("COUNT(*)");
-			}
-			resultSet.close();
-			resultSet = null;
-			
-			if(numberOfShapes == 0) {
-				throw new EmptyTableException(TABLE_NAME);
-			}
-			
-			result = new String[numberOfShapes][4];
 			resultSet = statement.executeQuery(SELECT);
-			for (int i = 0; i < result.length && resultSet.next(); i++) {
-				result[i][0] = resultSet.getString(HEADER[0]);
-				result[i][1] = resultSet.getString(HEADER[1]);
-				result[i][2] = resultSet.getString(HEADER[2]);
-				result[i][3] = resultSet.getString(HEADER[3]);	
+			
+			while (resultSet.next()) {
+				table.add(new String[] {
+						resultSet.getString(HEADER[0]),
+						resultSet.getString(HEADER[1]),
+						resultSet.getString(HEADER[2]),
+						resultSet.getString(HEADER[3])
+				});
 			}
+			
 			resultSet.close();
 			resultSet = null;
 			
 			statement.close();
 			statement = null;
+			
+			if(table.size() == 0) {
+				throw new EmptyTableException(TABLE_NAME);
+			}
 			
 		} catch (SQLException ex) {
 			if (resultSet != null) {
@@ -102,6 +97,12 @@ public class ShapeDB {
 			throw ex;
 		}
 		
-		return result;
+		String[][] arrTable = new String[table.size()][];
+		
+		for (int i = 0; i < arrTable.length; i++) {
+			arrTable[i] = table.get(i);
+		}
+		
+		return arrTable;
 	}
 }
