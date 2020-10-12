@@ -26,9 +26,18 @@ import ua.itea.service.ShapeStorageService;
 public class Window extends JFrame {
 	private ShapeFactory shapeFactory;
 	private ShapeStorageService shapeStorageService;
+	
 	private JPanel currentJPanel;
-	private JPanel mainMenuPanel;
-	private JPanel successMessagePanel;
+	
+	private JPanel actionSelectorPanel;
+	private JPanel shapeSelectorPanel;
+	
+	private JPanel circleSetterPanel;
+	private JPanel rectangleSetterPanel;
+	private JPanel triangleComputationMethodPanel;
+	private JPanel firstMethodComputationPanel;
+	private JPanel secondMethodComputationPanel;
+	
 	
 	public Window(ShapeFactory shapeFactory, 
 				  ShapeStorageService shapeStorageService) {
@@ -36,17 +45,15 @@ public class Window extends JFrame {
 		this.shapeFactory = shapeFactory;
 		this.shapeStorageService = shapeStorageService;
 		
-		mainMenuPanel = new ActionSelectorPanel();
-		setPanel(mainMenuPanel);
-		
-		successMessagePanel = new SuccessMessagePanel("Success", mainMenuPanel);
+		actionSelectorPanel = new ActionSelectorPanel();
+		setPanel(actionSelectorPanel);
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	private void setPanel(JPanel panel) {
 		if (currentJPanel != null) {
-			currentJPanel.setVisible(false);
+			currentJPanel.setVisible(false);	
 		}
 		
 		currentJPanel = panel;
@@ -69,7 +76,6 @@ public class Window extends JFrame {
 	
 	private class ActionSelectorPanel extends JPanel {
 		private Dimension preferredSize;
-		private JPanel addShapePanel;
 		
 		public ActionSelectorPanel() {
 			preferredSize = new Dimension(200, 100);
@@ -89,11 +95,11 @@ public class Window extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (addShapePanel == null) {
-						addShapePanel = new ShapeSelectorPanel(currentPanel);
+					if (shapeSelectorPanel == null) {
+						shapeSelectorPanel = new ShapeSelectorPanel(currentPanel);
 					}
 					
-					setPanel(addShapePanel);
+					setPanel(shapeSelectorPanel);
 				}
 			});
 			
@@ -116,7 +122,7 @@ public class Window extends JFrame {
 						nextPanel = new ErrorMessagePanel(ex.getMessage(), currentPanel);
 					} catch (SQLException ex) {
 						ex.printStackTrace();
-						nextPanel = mainMenuPanel;
+						nextPanel = actionSelectorPanel;
 					}
 					
 					setPanel(nextPanel);
@@ -138,12 +144,8 @@ public class Window extends JFrame {
 		private JButton backButton;
 		
 		public BackButtonPanel(JPanel previousPanel) {
-			setPreviousPanel(previousPanel);
-			backButton = createBackButton();
-		}
-		
-		public void setPreviousPanel(JPanel previousPanel) {
 			this.previousPanel = previousPanel;
+			backButton = createBackButton();
 		}
 		
 		protected JButton getBackButton() {
@@ -167,9 +169,6 @@ public class Window extends JFrame {
 	
 	
 	private class ShapeSelectorPanel extends BackButtonPanel {
-		private JPanel addCirclePanel;
-		private JPanel addRectanglePanel;
-		private JPanel addTrianglePanel;
 		
 		public ShapeSelectorPanel(JPanel previousPanel) {
 			super(previousPanel);
@@ -204,11 +203,11 @@ public class Window extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (addCirclePanel == null) {
-						addCirclePanel = new CircleSetterPanel(currentPanel);
+					if (circleSetterPanel == null) {
+						circleSetterPanel = new CircleSetterPanel(currentPanel);
 					}
 					
-					setPanel(addCirclePanel);
+					setPanel(circleSetterPanel);
 				}
 			});
 			
@@ -229,11 +228,11 @@ public class Window extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (addRectanglePanel == null) {
-						addRectanglePanel = new RectangleSetterPanel(currentPanel);
+					if (rectangleSetterPanel == null) {
+						rectangleSetterPanel = new RectangleSetterPanel(currentPanel);
 					}
 					
-					setPanel(addRectanglePanel);
+					setPanel(rectangleSetterPanel);
 				}
 			});
 			
@@ -254,11 +253,11 @@ public class Window extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (addTrianglePanel == null) {
-						addTrianglePanel = new TriangleComputationMethodSelectorPanel(currentPanel);
+					if (triangleComputationMethodPanel == null) {
+						triangleComputationMethodPanel = new TriangleComputationMethodSelectorPanel(currentPanel);
 					}
 					
-					setPanel(addTrianglePanel);
+					setPanel(triangleComputationMethodPanel);
 				}
 			});
 			
@@ -373,7 +372,7 @@ public class Window extends JFrame {
 			
 			try {
 				saveAction();
-				nextPanel = successMessagePanel;
+				nextPanel = new SuccessMessagePanel("Success", shapeSelectorPanel);
 				refresh();
 				
 			}  catch (NumberFormatException ex) {
@@ -382,7 +381,7 @@ public class Window extends JFrame {
 				nextPanel = new ErrorMessagePanel(ex.getMessage(), this);
 			} catch (SQLException ex) {
 				ex.printStackTrace();
-				nextPanel = mainMenuPanel;
+				nextPanel = actionSelectorPanel;
 			}
 			
 			setPanel(nextPanel);
@@ -508,8 +507,6 @@ public class Window extends JFrame {
 	
 	
 	private class TriangleComputationMethodSelectorPanel extends BackButtonPanel {
-		private JPanel firstMethodComputationPanel;
-		private JPanel secondMethodComputationPanel;
 		
 		public TriangleComputationMethodSelectorPanel(JPanel previousPanel) {
 			super(previousPanel);
