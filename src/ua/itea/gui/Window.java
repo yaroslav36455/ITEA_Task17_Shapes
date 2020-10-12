@@ -827,6 +827,18 @@ public class Window extends JFrame {
 		private void makeAction() {
 			setPanel(nextPanel);
 		}
+		
+		@Override
+		public Dimension getPreferredSize() {
+			final int minWidth = 150;
+			
+			Dimension dim = super.getPreferredSize();
+			
+			int width = (int) (dim.getWidth() < minWidth ? minWidth : dim.getWidth());
+			int height = (int) dim.getHeight();
+			
+			return new Dimension(width, height);
+		}
 	}
 }
 
